@@ -1,4 +1,4 @@
-import { describe, expect, test } from 'vitest';
+import { describe, expect, test, vi } from 'vitest';
 import { addFunctionSerializer } from '../../css/src/functionSerializer';
 import {
   processVanillaFile,
@@ -263,15 +263,15 @@ describe('serializeVanillaModule', () => {
 
 describe('processVanillaFile', () => {
   test('should process vanilla file with correct promise order', async () => {
-    jest.useFakeTimers();
+    vi.useFakeTimers();
 
-    const serializeVirtualCssPath1 = jest.fn(
+    const serializeVirtualCssPath1 = vi.fn(
       ({ source }) =>
         new Promise<string>((resolve) => {
           setTimeout(() => resolve(source), 1);
         }),
     );
-    const serializeVirtualCssPath2 = jest.fn(({ source }) =>
+    const serializeVirtualCssPath2 = vi.fn(({ source }) =>
       Promise.resolve(source),
     );
 
@@ -300,7 +300,7 @@ describe('processVanillaFile', () => {
         filePath: require.resolve('@fixtures/sprinkles'),
         serializeVirtualCssPath: serializeVirtualCssPath2,
       }),
-      jest.runAllTimersAsync(),
+      vi.runAllTimersAsync(),
     ]);
 
     expect(result).toMatchInlineSnapshot(`
@@ -314,6 +314,6 @@ describe('processVanillaFile', () => {
       export var y = 'style1__emvcy10 dependency__ma8c4x0';"
     `);
 
-    jest.useRealTimers();
+    vi.useRealTimers();
   });
 });
