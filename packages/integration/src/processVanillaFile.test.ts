@@ -143,7 +143,7 @@ describe('serializeVanillaModule', () => {
   });
 
   test('should handle deprecated __recipe__ function serialization', () => {
-    const sprinkles = () => { };
+    const sprinkles = () => {};
     // Once support for `__recipe__` is removed, this test can be removed,
     // and all other tests that use `__function_serializer__` should be updated
     // to use `addFunctionSerializer`
@@ -261,8 +261,9 @@ describe('serializeVanillaModule', () => {
 });
 
 describe('processVanillaFile', () => {
-  jest.useFakeTimers();
   test('should process vanilla file with correct promise order', async () => {
+    jest.useFakeTimers();
+
     const serializeVirtualCssPath1 = jest.fn(
       ({ source }) =>
         new Promise<string>((resolve) => {
@@ -300,6 +301,18 @@ describe('processVanillaFile', () => {
       }),
       jest.runAllTimersAsync(),
     ]);
-    expect(result).toMatch(/.*export var y = .*style1.*/);
+
+    expect(result).toMatchInlineSnapshot(`
+      ".dependency__ma8c4x0 {
+        color: blue;
+      }
+      body .style1__emvcy10 {
+        color: red;
+      }
+      export var x = 'dependency__ma8c4x0';
+      export var y = 'style1__emvcy10 dependency__ma8c4x0';"
+    `);
+
+    jest.useRealTimers();
   });
 });
